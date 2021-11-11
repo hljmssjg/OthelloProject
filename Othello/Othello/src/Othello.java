@@ -5,7 +5,7 @@ public class Othello {
         // String s = "WO111111E1111111E11111111111111111111111111111111111111111111111O";
         // System.out.println(s.length());
         OthelloPosition othelloPosition = new OthelloPosition();
-        othelloPosition.initialize();
+        //othelloPosition.initialize();
         othelloPosition.illustrate();
 
         OthelloPosition newOthelloPosition = new OthelloPosition();
