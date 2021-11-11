@@ -2,9 +2,9 @@ import java.util.LinkedList;
 
 public class Othello {
     public static void main(String[] args) {
-        String s = "WO111111E1111111E11111111111111111111111111111111111111111111111O";
+        // String s = "WO111111E1111111E11111111111111111111111111111111111111111111111O";
         // System.out.println(s.length());
-        OthelloPosition othelloPosition = new OthelloPosition(s);
+        OthelloPosition othelloPosition = new OthelloPosition();
         othelloPosition.initialize();
         othelloPosition.illustrate();
 
@@ -17,7 +17,7 @@ public class Othello {
                 newOthelloPosition = othelloPosition;
                 newOthelloPosition = othelloPosition.makeMove(othelloAction);
             } catch (IllegalMoveException e) {
-                System.out.println("The error is:" + e.toString());
+                System.out.println("The error is:" + e);
                 System.out.print("The wrong row&column is:" );
                 e.getAction().print();
 
