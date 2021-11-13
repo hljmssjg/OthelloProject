@@ -381,6 +381,7 @@ public class OthelloPosition {
             char playerMarker = maxPlayer ? 'W' : 'B';
             currentPosition.board[action.getRow()][action.getColumn()] = playerMarker;
             currentPosition.board = flipPieces(currentPosition, action, playerMarker);
+            currentPosition.maxPlayer = !maxPlayer;
             return currentPosition;
         }
     }
@@ -407,12 +408,15 @@ public class OthelloPosition {
     }
 
 
-    public boolean isIllegalAction(OthelloAction action) {
+    public boolean isIllegalAction(OthelloAction action) {/*
         if (!isCandidate(action.getRow(), action.getColumn())) {
             return true;
         }
         if (!isMove(action.getRow(), action.getColumn())) {
             return true;
+        }*/
+        if (action.isPassMove()){
+            return false;
         }
         return action.getColumn() > 8 || action.getColumn() < 1 || action.getRow() > 8 || action.getRow() < 1;
     }

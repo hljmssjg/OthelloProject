@@ -1,14 +1,17 @@
+import java.util.ArrayList;
+import java.util.Collections;
+
 public class test {
     public static void main(String[] args) {
-        int[] east = {0, 1};
-        int[] west = {0, -1};
-        int[] north = {-1, 0};
-        int[] south = {1, 0};
-        int[] northWest = {-1, -1};
-        int[] northEast = {-1, 1};
-        int[] southEast = {1, 1};
-        int[] southWest = {1, -1};
-        int[][] directions = {{0, 1},west,north,south,northWest,northEast,southEast,southWest};
-        System.out.println(directions[1][1]);
+        ArrayList<Integer> al = new ArrayList<>();
+        al.add(1);
+        al.add(2);
+        al.add(3);
+        al.add(3);
+
+        System.out.println(Collections.max(al));
+        System.out.println(al.indexOf(Collections.max(al)));
+
+
     }
 }
