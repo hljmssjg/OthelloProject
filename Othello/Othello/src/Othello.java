@@ -1,6 +1,6 @@
 public class Othello {
     public static void main(String[] args) {
-        // String s = "WO111111E1111111E1111111E111111111111111111111111111111111111111E";;
+        // String s = "WO111111E1111111E1111111E111111111111111111111111111111111111111E";
         OthelloPosition othelloPosition = new OthelloPosition();
         othelloPosition.initialize();
         othelloPosition.illustrate();
@@ -8,8 +8,10 @@ public class Othello {
         StaticEvaluator staticEvaluator = new StaticEvaluator();
         DynamicEvaluator dynamicEvaluator = new DynamicEvaluator();
         dynamicEvaluator.setEvaluator(staticEvaluator);
+        dynamicEvaluator.setSearchDepth(1);
+        dynamicEvaluator.setTimeLimit(5);
 
-        dynamicEvaluator.AIvsAI(othelloPosition,dynamicEvaluator);
+        dynamicEvaluator.Start(othelloPosition,dynamicEvaluator);
 
 
 
