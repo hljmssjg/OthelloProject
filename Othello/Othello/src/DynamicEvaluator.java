@@ -4,10 +4,12 @@ import java.util.LinkedList;
 public class DynamicEvaluator implements OthelloAlgorithm {
     public OthelloEvaluator evaluator;
     public int depth;
-    public int timeLimit;
+    public long timeLimit;
+    long startTime;
+    long endTime;
 
     public void setTimeLimit(int timeLimit) {
-        this.timeLimit = timeLimit;
+        this.timeLimit = timeLimit * 1000L;
     }
 
     public static boolean isFinish(OthelloPosition position) {
@@ -20,6 +22,7 @@ public class DynamicEvaluator implements OthelloAlgorithm {
         }
         return true;
     }
+
 
     public void Start(OthelloPosition position, DynamicEvaluator dynamicEvaluator) {
         while (!isFinish(position)) {
@@ -34,7 +37,11 @@ public class DynamicEvaluator implements OthelloAlgorithm {
         }
     }
 
-    public OthelloAction MaxValue(OthelloPosition position, double alpha, double beta, int depth) throws IllegalMoveException {
+    public OthelloAction MaxValue(OthelloPosition position, double alpha, double beta, int depth) throws IllegalMoveException, TimeLimitException {
+
+        if(System.currentTimeMillis() > endTime){
+            throw new TimeLimitException();
+        }
         if (depth == 0) {
             OthelloAction leafNode = new OthelloAction("pass");
             leafNode.setValue(this.evaluator.evaluate(position));
@@ -62,8 +69,10 @@ public class DynamicEvaluator implements OthelloAlgorithm {
         return maxAction;
     }
 
-
-    public OthelloAction MinValue(OthelloPosition position, double alpha, double beta, int depth) throws IllegalMoveException {
+    public OthelloAction MinValue(OthelloPosition position, double alpha, double beta, int depth) throws IllegalMoveException, TimeLimitException {
+        if(System.currentTimeMillis() > endTime){
+            throw new TimeLimitException();
+        }
         if (depth == 0) {
             OthelloAction leafNode = new OthelloAction("pass");
             leafNode.setValue(this.evaluator.evaluate(position));
@@ -90,9 +99,20 @@ public class DynamicEvaluator implements OthelloAlgorithm {
         return minAction;
     }
 
-    public OthelloAction AlphaBeta(OthelloPosition position) throws IllegalMoveException {
-        return MaxValue(position, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, depth);
+    public OthelloAction AlphaBeta(OthelloPosition position,int depth) throws IllegalMoveException {
+        startTime = System.currentTimeMillis();
+        endTime = startTime + timeLimit ;
+        OthelloAction bestMove = new OthelloAction(0,0);
+        for(int i = 1; i <= depth; i++){
+            try {
+                bestMove = MaxValue(position, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, i);
+            } catch (TimeLimitException e) {
+                break;
+            }
+        }
+        return bestMove;
     }
+
 
     @Override
     public void setEvaluator(OthelloEvaluator evaluator) {
@@ -102,9 +122,10 @@ public class DynamicEvaluator implements OthelloAlgorithm {
     @Override
     public OthelloAction evaluate(OthelloPosition position) {
         try {
-            return AlphaBeta(position);
+            return AlphaBeta(position,depth);
         } catch (IllegalMoveException e) {
-            System.out.println(e.getMessage());
+            e.printStackTrace();
+            System.exit(0);
             return new OthelloAction("pass");
         }
     }

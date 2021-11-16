@@ -408,13 +408,7 @@ public class OthelloPosition {
     }
 
 
-    public boolean isIllegalAction(OthelloAction action) {/*
-        if (!isCandidate(action.getRow(), action.getColumn())) {
-            return true;
-        }
-        if (!isMove(action.getRow(), action.getColumn())) {
-            return true;
-        }*/
+    public boolean isIllegalAction(OthelloAction action) {
         if (action.isPassMove()){
             return false;
         }
