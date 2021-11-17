@@ -8,7 +8,7 @@ public class DynamicEvaluator implements OthelloAlgorithm {
     long startTime;
     long endTime;
 
-    public void setTimeLimit(int timeLimit) {
+    public void setTimeLimit(long timeLimit) {
         this.timeLimit = timeLimit * 1000L;
     }
 
@@ -23,8 +23,7 @@ public class DynamicEvaluator implements OthelloAlgorithm {
         return true;
     }
 
-
-    public void Start(OthelloPosition position, DynamicEvaluator dynamicEvaluator) {
+    public void AIvsAI(OthelloPosition position, DynamicEvaluator dynamicEvaluator){
         while (!isFinish(position)) {
             OthelloAction bestAction = dynamicEvaluator.evaluate(position);
             try {
@@ -35,6 +34,11 @@ public class DynamicEvaluator implements OthelloAlgorithm {
                 e.printStackTrace();
             }
         }
+    }
+
+    public void Start(OthelloPosition position, DynamicEvaluator dynamicEvaluator) {
+        OthelloAction bestAction = dynamicEvaluator.evaluate(position);
+        bestAction.print();
     }
 
     public OthelloAction MaxValue(OthelloPosition position, double alpha, double beta, int depth) throws IllegalMoveException, TimeLimitException {
@@ -53,13 +57,17 @@ public class DynamicEvaluator implements OthelloAlgorithm {
             return new OthelloAction("pass");
         }
         OthelloAction maxAction = new OthelloAction(0, 0);
+        maxAction.setValue((int)value);
         for (OthelloAction action : othelloActions) {
-            OthelloPosition childNode = position.clone().makeMove(action);
+            OthelloPosition childNode = position.makeMove(action);
             value = Math.max(value, MinValue(childNode, alpha, beta, depth - 1).getValue());
             alpha = Math.max(alpha, value);
-            maxAction.setValue((int) value);
-            maxAction.setRow(action.getRow());
-            maxAction.setColumn(action.getColumn());
+            if(value > maxAction.getValue()){
+                maxAction.setValue((int) value);
+                maxAction.setRow(action.getRow());
+                maxAction.setColumn(action.getColumn());
+            }
+
 
             if (alpha >= beta) {
                 break;
@@ -84,13 +92,16 @@ public class DynamicEvaluator implements OthelloAlgorithm {
             return new OthelloAction("pass");
         }
         OthelloAction minAction = new OthelloAction(0, 0);
+        minAction.setValue((int)value);
         for (OthelloAction action : othelloActions) {
-            OthelloPosition childNode = position.clone().makeMove(action);
+            OthelloPosition childNode = position.makeMove(action);
             value = Math.min(value, MaxValue(childNode, alpha, beta, depth - 1).getValue());
             beta = Math.min(beta, value);
-            minAction.setValue((int) value);
-            minAction.setRow(action.getRow());
-            minAction.setColumn(action.getColumn());
+            if(value < minAction.getValue()){
+                minAction.setValue((int) value);
+                minAction.setRow(action.getRow());
+                minAction.setColumn(action.getColumn());
+            }
 
             if (alpha >= beta) {
                 break;
@@ -103,9 +114,24 @@ public class DynamicEvaluator implements OthelloAlgorithm {
         startTime = System.currentTimeMillis();
         endTime = startTime + timeLimit ;
         OthelloAction bestMove = new OthelloAction(0,0);
-        for(int i = 1; i <= depth; i++){
+/*        for(int i = 1; i <= depth; i++){
             try {
-                bestMove = MaxValue(position, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, i);
+                if(position.maxPlayer){
+                    bestMove = MaxValue(position, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, i);
+                }else{
+                    bestMove = MinValue(position, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, i);
+                }
+            } catch (TimeLimitException e) {
+                break;
+            }
+        }*/
+        for(int i = depth; i < 100000; i++){
+            try {
+                if(position.maxPlayer){
+                    bestMove = MaxValue(position, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, i);
+                }else{
+                    bestMove = MinValue(position, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, i);
+                }
             } catch (TimeLimitException e) {
                 break;
             }
@@ -132,6 +158,6 @@ public class DynamicEvaluator implements OthelloAlgorithm {
 
     @Override
     public void setSearchDepth(int depth) {
-        this.depth = depth + 1;
+        this.depth = depth;
     }
 }
