@@ -34,6 +34,29 @@ public class DynamicEvaluator implements OthelloAlgorithm {
                 e.printStackTrace();
             }
         }
+        String line = position.toString();
+        String[] markers = line.split("");
+        int countWhite = 0;
+        int countBlack = 0;
+        for (String marker : markers) {
+            if (marker.equals("O")) {
+                countWhite++;
+            }
+            if (marker.equals("X")){
+                countBlack++;
+            }
+        }
+        String name;
+        if(countWhite>countBlack){
+            name = "白棋";
+        }else if(countBlack>countWhite){
+            name = "黑棋";
+        }else{
+            name = "双方";
+        }
+        System.out.println("游戏结束，白棋的数目为"+countWhite+"黑棋的数目为"+countBlack);
+        System.out.println(name + "胜！");
+
     }
 
     public void Start(OthelloPosition position, DynamicEvaluator dynamicEvaluator) {
