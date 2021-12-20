@@ -1,3 +1,4 @@
+import java.util.HashMap;
 import java.util.LinkedList;
 
 
@@ -7,6 +8,7 @@ public class DynamicEvaluator implements OthelloAlgorithm {
     public long timeLimit;
     long startTime;
     long endTime;
+    public HashMap<OthelloPosition,OthelloAction> positionList = new HashMap<>();
 
     public void setTimeLimit(long timeLimit) {
         this.timeLimit = timeLimit * 1000L;
@@ -69,68 +71,80 @@ public class DynamicEvaluator implements OthelloAlgorithm {
         if(System.currentTimeMillis() > endTime){
             throw new TimeLimitException();
         }
-        if (depth == 0) {
-            OthelloAction leafNode = new OthelloAction("pass");
-            leafNode.setValue(this.evaluator.evaluate(position));
-            return leafNode;
-        }
-        double value = Double.NEGATIVE_INFINITY;
-        LinkedList<OthelloAction> othelloActions = position.getMoves();
-        if (othelloActions.size() == 0) {
-            return new OthelloAction("pass");
-        }
-        OthelloAction maxAction = new OthelloAction(0, 0);
-        maxAction.setValue((int)value);
-        for (OthelloAction action : othelloActions) {
-            OthelloPosition childNode = position.makeMove(action);
-            value = Math.max(value, MinValue(childNode, alpha, beta, depth - 1).getValue());
-            alpha = Math.max(alpha, value);
-            if(value > maxAction.getValue()){
-                maxAction.setValue((int) value);
-                maxAction.setRow(action.getRow());
-                maxAction.setColumn(action.getColumn());
+        if(positionList.containsKey(position)){
+            return positionList.get(position);
+        }else {
+            if (depth == 0) {
+                OthelloAction leafNode = new OthelloAction("pass");
+                leafNode.setValue(this.evaluator.evaluate(position));
+                return leafNode;
+            }
+            double value = Double.NEGATIVE_INFINITY;
+            LinkedList<OthelloAction> othelloActions = position.getMoves();
+            if (othelloActions.size() == 0) {
+                return new OthelloAction("pass");
+            }
+            OthelloAction maxAction = new OthelloAction(0, 0);
+            maxAction.setValue((int)value);
+            for (OthelloAction action : othelloActions) {
+                OthelloPosition childNode = position.makeMove(action);
+                value = Math.max(value, MinValue(childNode, alpha, beta, depth - 1).getValue());
+                alpha = Math.max(alpha, value);
+                if(value > maxAction.getValue()){
+                    maxAction.setValue((int) value);
+                    maxAction.setRow(action.getRow());
+                    maxAction.setColumn(action.getColumn());
+                    positionList.put(position,maxAction);
+                }
+
+
+                if (alpha >= beta) {
+                    break;
+                }
             }
 
-
-            if (alpha >= beta) {
-                break;
-            }
+            return maxAction;
         }
 
-        return maxAction;
     }
 
     public OthelloAction MinValue(OthelloPosition position, double alpha, double beta, int depth) throws IllegalMoveException, TimeLimitException {
         if(System.currentTimeMillis() > endTime){
             throw new TimeLimitException();
         }
-        if (depth == 0) {
-            OthelloAction leafNode = new OthelloAction("pass");
-            leafNode.setValue(this.evaluator.evaluate(position));
-            return leafNode;
-        }
-        double value = Double.POSITIVE_INFINITY;
-        LinkedList<OthelloAction> othelloActions = position.getMoves();
-        if (othelloActions.size() == 0) {
-            return new OthelloAction("pass");
-        }
-        OthelloAction minAction = new OthelloAction(0, 0);
-        minAction.setValue((int)value);
-        for (OthelloAction action : othelloActions) {
-            OthelloPosition childNode = position.makeMove(action);
-            value = Math.min(value, MaxValue(childNode, alpha, beta, depth - 1).getValue());
-            beta = Math.min(beta, value);
-            if(value < minAction.getValue()){
-                minAction.setValue((int) value);
-                minAction.setRow(action.getRow());
-                minAction.setColumn(action.getColumn());
+        if(positionList.containsKey(position)){
+            return positionList.get(position);
+        }else{
+            if (depth == 0) {
+                OthelloAction leafNode = new OthelloAction("pass");
+                leafNode.setValue(this.evaluator.evaluate(position));
+                return leafNode;
             }
+            double value = Double.POSITIVE_INFINITY;
+            LinkedList<OthelloAction> othelloActions = position.getMoves();
+            if (othelloActions.size() == 0) {
+                return new OthelloAction("pass");
+            }
+            OthelloAction minAction = new OthelloAction(0, 0);
+            minAction.setValue((int)value);
+            for (OthelloAction action : othelloActions) {
+                OthelloPosition childNode = position.makeMove(action);
+                value = Math.min(value, MaxValue(childNode, alpha, beta, depth - 1).getValue());
+                beta = Math.min(beta, value);
+                if(value < minAction.getValue()){
+                    minAction.setValue((int) value);
+                    minAction.setRow(action.getRow());
+                    minAction.setColumn(action.getColumn());
+                    positionList.put(position,minAction);
+                }
 
-            if (alpha >= beta) {
-                break;
+                if (alpha >= beta) {
+                    break;
+                }
             }
+            return minAction;
         }
-        return minAction;
+
     }
 
     public OthelloAction AlphaBeta(OthelloPosition position,int depth) throws IllegalMoveException {
